@@ -1,4 +1,6 @@
 import React from 'react';
+import { TopNavigation } from './TopNavigation';
+import { AboutGame } from './AboutGame';
 
 interface MyScoreProps {
   onClose: () => void;
@@ -17,6 +19,8 @@ export const MyScore: React.FC<MyScoreProps> = ({
   bestClickSpeed,
   favoriteAction 
 }) => {
+  const [showAbout, setShowAbout] = React.useState(false);
+
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
@@ -42,12 +46,31 @@ export const MyScore: React.FC<MyScoreProps> = ({
     }
   };
 
+  const handleAboutGame = () => {
+    setShowAbout(true);
+  };
+
+  const handleMyScore = () => {
+    // Already on score page, do nothing
+  };
+
+  // Show About Game page
+  if (showAbout) {
+    return <AboutGame onClose={() => setShowAbout(false)} />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-400 via-pink-500 to-red-500 flex flex-col items-center justify-center relative overflow-hidden p-6">
+      {/* Top Navigation */}
+      <TopNavigation
+        onAboutGame={handleAboutGame}
+        onMyScore={handleMyScore}
+      />
+
       {/* Close button */}
       <button
         onClick={onClose}
-        className="absolute top-6 right-6 w-10 h-10 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30 flex items-center justify-center text-xl transition-all duration-200 text-white"
+        className="absolute top-6 left-6 w-10 h-10 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30 flex items-center justify-center text-xl transition-all duration-200 text-white"
       >
         ✖️
       </button>

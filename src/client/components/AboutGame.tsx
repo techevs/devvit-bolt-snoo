@@ -1,20 +1,35 @@
 import React from 'react';
 import { TopNavigation } from './TopNavigation';
+import { MyScore } from './MyScore';
 
 interface AboutGameProps {
   onClose: () => void;
 }
 
 export const AboutGame: React.FC<AboutGameProps> = ({ onClose }) => {
-  // Dummy handlers for navigation
+  const [showScore, setShowScore] = React.useState(false);
+
   const handleAboutGame = () => {
     // Already on about page, do nothing
   };
 
   const handleMyScore = () => {
-    // In a real implementation, this would navigate to the score page
-    console.log('My score clicked from about page');
+    setShowScore(true);
   };
+
+  // Show My Score page
+  if (showScore) {
+    return (
+      <MyScore
+        onClose={() => setShowScore(false)}
+        totalGamesPlayed={0} // Dummy data
+        totalClicks={0}
+        totalTimeSpent={0}
+        bestClickSpeed={0}
+        favoriteAction={'balanced'}
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center relative overflow-hidden p-6">

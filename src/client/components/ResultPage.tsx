@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { TopNavigation } from './TopNavigation';
+import { AboutGame } from './AboutGame';
+import { MyScore } from './MyScore';
 
 interface ResultPageProps {
   loveCount: number;
@@ -175,16 +177,32 @@ export const ResultPage: React.FC<ResultPageProps> = ({ loveCount, irritateCount
     return '😴';
   };
 
-  // Dummy handlers for navigation (since we don't have access to the main app state here)
   const handleAboutGame = () => {
-    // In a real implementation, this would navigate to the about page
-    console.log('About game clicked');
+    setShowAbout(true);
   };
 
   const handleMyScore = () => {
-    // In a real implementation, this would navigate to the score page
-    console.log('My score clicked');
+    setShowScore(true);
   };
+
+  // Show About Game page
+  if (showAbout) {
+    return <AboutGame onClose={() => setShowAbout(false)} />;
+  }
+
+  // Show My Score page
+  if (showScore) {
+    return (
+      <MyScore
+        onClose={() => setShowScore(false)}
+        totalGamesPlayed={1} // Dummy data since we don't have access to real stats here
+        totalClicks={totalClicks}
+        totalTimeSpent={10}
+        bestClickSpeed={Math.round((totalClicks / 10) * 10) / 10}
+        favoriteAction={isLoveWinner ? 'love' : irritateCount > loveCount ? 'irritate' : 'balanced'}
+      />
+    );
+  }
 
   return (
     <div
