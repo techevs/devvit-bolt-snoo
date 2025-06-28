@@ -122,7 +122,7 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({ onClose }) => 
               </thead>
               <tbody>
                 {topPlayers.map((player, index) => (
-                  <tr key={player.username} className="border-b border-gray-700 hover:bg-white hover:bg-opacity-10 transition-colors">
+                  <tr key={player.username} className="border-b border-gray-700 hover:bg-purple-500 hover:bg-opacity-20 transition-colors">
                     <td className="py-3 px-2">
                       <span className="text-2xl">
                         {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : `${index + 1}.`}
@@ -146,7 +146,7 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({ onClose }) => 
           </h2>
           <div className="space-y-4">
             {snooBehavior.map((behavior, index) => (
-              <div key={behavior.category} className="flex items-center justify-between p-4 bg-white bg-opacity-10 rounded-xl">
+              <div key={behavior.category} className="flex items-center justify-between p-4 bg-gray-800 bg-opacity-60 rounded-xl border border-gray-600 border-opacity-50">
                 <div className="flex items-center gap-3">
                   <span className="text-2xl">
                     {behavior.category.includes('Love') ? '❤️' : 
