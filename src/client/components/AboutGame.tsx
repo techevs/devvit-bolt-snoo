@@ -1,16 +1,33 @@
 import React from 'react';
+import { TopNavigation } from './TopNavigation';
 
 interface AboutGameProps {
   onClose: () => void;
 }
 
 export const AboutGame: React.FC<AboutGameProps> = ({ onClose }) => {
+  // Dummy handlers for navigation
+  const handleAboutGame = () => {
+    // Already on about page, do nothing
+  };
+
+  const handleMyScore = () => {
+    // In a real implementation, this would navigate to the score page
+    console.log('My score clicked from about page');
+  };
+
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center relative overflow-hidden p-6">
+      {/* Top Navigation */}
+      <TopNavigation
+        onAboutGame={handleAboutGame}
+        onMyScore={handleMyScore}
+      />
+
       {/* Close button */}
       <button
         onClick={onClose}
-        className="absolute top-6 right-6 w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-xl transition-colors duration-200"
+        className="absolute top-6 left-6 w-10 h-10 rounded-full bg-gray-200 hover:bg-gray-300 flex items-center justify-center text-xl transition-colors duration-200"
       >
         ✖️
       </button>

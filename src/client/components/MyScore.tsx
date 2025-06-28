@@ -63,7 +63,7 @@ export const MyScore: React.FC<MyScoreProps> = ({
         {/* Stats Cards */}
         <div className="space-y-4">
           {/* Games Played */}
-          <div className="bg-white bg-opacity-20 backdrop-blur-lg rounded-2xl p-4 border border-white border-opacity-30">
+          <div className="bg-gray-800 bg-opacity-80 backdrop-blur-lg rounded-2xl p-4 border border-white border-opacity-30">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span className="text-2xl">🎮</span>
@@ -74,7 +74,7 @@ export const MyScore: React.FC<MyScoreProps> = ({
           </div>
 
           {/* Total Clicks */}
-          <div className="bg-white bg-opacity-20 backdrop-blur-lg rounded-2xl p-4 border border-white border-opacity-30">
+          <div className="bg-gray-800 bg-opacity-80 backdrop-blur-lg rounded-2xl p-4 border border-white border-opacity-30">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span className="text-2xl">👆</span>
@@ -85,7 +85,7 @@ export const MyScore: React.FC<MyScoreProps> = ({
           </div>
 
           {/* Time Spent */}
-          <div className="bg-white bg-opacity-20 backdrop-blur-lg rounded-2xl p-4 border border-white border-opacity-30">
+          <div className="bg-gray-800 bg-opacity-80 backdrop-blur-lg rounded-2xl p-4 border border-white border-opacity-30">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span className="text-2xl">⏱️</span>
@@ -96,7 +96,7 @@ export const MyScore: React.FC<MyScoreProps> = ({
           </div>
 
           {/* Best Click Speed */}
-          <div className="bg-white bg-opacity-20 backdrop-blur-lg rounded-2xl p-4 border border-white border-opacity-30">
+          <div className="bg-gray-800 bg-opacity-80 backdrop-blur-lg rounded-2xl p-4 border border-white border-opacity-30">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span className="text-2xl">⚡</span>
@@ -107,7 +107,7 @@ export const MyScore: React.FC<MyScoreProps> = ({
           </div>
 
           {/* Player Type */}
-          <div className="bg-white bg-opacity-20 backdrop-blur-lg rounded-2xl p-4 border border-white border-opacity-30">
+          <div className="bg-gray-800 bg-opacity-80 backdrop-blur-lg rounded-2xl p-4 border border-white border-opacity-30">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <span className="text-2xl">{getActionEmoji()}</span>
