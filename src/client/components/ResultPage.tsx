@@ -211,7 +211,7 @@ export const ResultPage: React.FC<ResultPageProps> = ({ loveCount, irritateCount
         )}
 
         {/* Message from Snoo */}
-        <div className="rounded-2xl p-4 mb-6 border-2" style={{ 
+        <div className="rounded-2xl p-4 mb-8 border-2" style={{ 
           backgroundColor: 'rgba(0, 0, 0, 0.6)', 
           borderColor: 'rgba(255, 255, 255, 0.3)',
           backdropFilter: 'blur(10px)'
@@ -224,47 +224,11 @@ export const ResultPage: React.FC<ResultPageProps> = ({ loveCount, irritateCount
           </p>
         </div>
 
-        {/* Stats */}
-        <div className="rounded-2xl p-6 mb-8 border-2" style={{ 
-          backgroundColor: 'rgba(0, 0, 0, 0.6)', 
-          borderColor: 'rgba(255, 255, 255, 0.3)',
-          backdropFilter: 'blur(10px)'
-        }}>
-          <h2 className="text-xl font-semibold mb-4" style={{ color: '#ffffff' }}>
-            Game Results
-          </h2>
-          
-          <div className="space-y-3">
-            <div className="flex justify-between items-center">
-              <span className="flex items-center gap-2" style={{ color: '#ffffff' }}>
-                <span className="text-xl">❤️</span>
-                Love clicks:
-              </span>
-              <span className="font-bold text-xl" style={{ color: '#ffffff' }}>{loveCount}</span>
-            </div>
-            
-            <div className="flex justify-between items-center">
-              <span className="flex items-center gap-2" style={{ color: '#ffffff' }}>
-                <span className="text-xl">😤</span>
-                Irritate clicks:
-              </span>
-              <span className="font-bold text-xl" style={{ color: '#ffffff' }}>{irritateCount}</span>
-            </div>
-            
-            <div className="border-t pt-3 mt-3" style={{ borderColor: 'rgba(255, 255, 255, 0.3)' }}>
-              <div className="flex justify-between items-center">
-                <span className="font-semibold" style={{ color: '#ffffff' }}>Total clicks:</span>
-                <span className="font-bold text-xl" style={{ color: '#ffffff' }}>{totalClicks}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Action buttons */}
-        <div className="flex flex-col gap-4">
+        {/* Action buttons - now horizontal */}
+        <div className="flex gap-4 justify-center">
           <button
             onClick={onRestart}
-            className="px-8 py-4 rounded-full font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200"
+            className="px-6 py-3 rounded-full font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200"
             style={{ 
               backgroundColor: '#ffffff', 
               color: '#1f2937',
@@ -276,7 +240,7 @@ export const ResultPage: React.FC<ResultPageProps> = ({ loveCount, irritateCount
           
           <button
             onClick={onClose}
-            className="px-8 py-4 rounded-full font-bold text-lg border-2 hover:transform hover:-translate-y-1 transition-all duration-200"
+            className="px-6 py-3 rounded-full font-bold text-lg border-2 hover:transform hover:-translate-y-1 transition-all duration-200"
             style={{ 
               backgroundColor: 'rgba(0, 0, 0, 0.3)', 
               color: '#ffffff',
