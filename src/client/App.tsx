@@ -6,8 +6,12 @@ import { EmojiEffect } from './components/EmojiEffect';
 import { Timer } from './components/Timer';
 import { ResultPage } from './components/ResultPage';
 import { LoadingScreen } from './components/LoadingScreen';
+import { AboutGame } from './components/AboutGame';
+import { MyScore } from './components/MyScore';
+import { TopNavigation } from './components/TopNavigation';
 
-type GameState = 'loading' | 'playing' | 'finished';
+type GameState = 'loading' | 'playing' | 'finished' | 'about' | 'score';
+type ClickSpeed = 'slow' | 'normal' | 'fast' | 'very-fast' | null;
 
 export const App = () => {
   const [gameState, setGameState] = useState<GameState>('loading');
@@ -18,14 +22,24 @@ export const App = () => {
   const [timeLeft, setTimeLeft] = useState(10);
   const [gameStarted, setGameStarted] = useState(false);
   const [disabledButton, setDisabledButton] = useState<'love' | 'irritate' | null>(null);
+  const [clickSpeed, setClickSpeed] = useState<ClickSpeed>(null);
+  
+  // Stats tracking
+  const [totalGamesPlayed, setTotalGamesPlayed] = useState(0);
+  const [totalClicks, setTotalClicks] = useState(0);
+  const [totalTimeSpent, setTotalTimeSpent] = useState(0);
+  const [bestClickSpeed, setBestClickSpeed] = useState(0);
+  const [favoriteAction, setFavoriteAction] = useState<'love' | 'irritate' | 'balanced'>('balanced');
+  
   const containerRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const clickTimestamps = useRef<number[]>([]);
 
   // Loading effect
   useEffect(() => {
     const loadingTimer = setTimeout(() => {
       setGameState('playing');
-    }, 2000); // Show loading for 2 seconds
+    }, 2000);
 
     return () => clearTimeout(loadingTimer);
   }, []);
@@ -37,6 +51,24 @@ export const App = () => {
       }, 1000);
     } else if (timeLeft === 0 && gameStarted) {
       setGameState('finished');
+      // Update stats when game finishes
+      setTotalGamesPlayed(prev => prev + 1);
+      setTotalClicks(prev => prev + loveCount + irritateCount);
+      setTotalTimeSpent(prev => prev + 10);
+      
+      // Calculate click speed for this game
+      const totalGameClicks = loveCount + irritateCount;
+      const gameClickSpeed = totalGameClicks / 10; // clicks per second
+      setBestClickSpeed(prev => Math.max(prev, gameClickSpeed));
+      
+      // Update favorite action
+      if (loveCount > irritateCount) {
+        setFavoriteAction('love');
+      } else if (irritateCount > loveCount) {
+        setFavoriteAction('irritate');
+      } else {
+        setFavoriteAction('balanced');
+      }
     }
 
     return () => {
@@ -44,11 +76,37 @@ export const App = () => {
         clearTimeout(timerRef.current);
       }
     };
-  }, [timeLeft, gameStarted]);
+  }, [timeLeft, gameStarted, loveCount, irritateCount]);
+
+  // Calculate click speed based on recent clicks
+  useEffect(() => {
+    const now = Date.now();
+    const recentClicks = clickTimestamps.current.filter(timestamp => now - timestamp < 2000); // Last 2 seconds
+    const clicksPerSecond = recentClicks.length / 2;
+
+    if (clicksPerSecond >= 3) {
+      setClickSpeed('very-fast');
+    } else if (clicksPerSecond >= 2) {
+      setClickSpeed('fast');
+    } else if (clicksPerSecond >= 1) {
+      setClickSpeed('normal');
+    } else if (recentClicks.length > 0) {
+      setClickSpeed('slow');
+    } else {
+      setClickSpeed(null);
+    }
+  }, [loveCount, irritateCount]);
 
   const handleAction = (type: 'love' | 'irritate') => {
     if (!gameStarted) {
       setGameStarted(true);
+    }
+
+    // Track click timestamp
+    clickTimestamps.current.push(Date.now());
+    // Keep only last 10 clicks for performance
+    if (clickTimestamps.current.length > 10) {
+      clickTimestamps.current = clickTimestamps.current.slice(-10);
     }
 
     if (type === 'love') {
@@ -61,7 +119,6 @@ export const App = () => {
       setDisabledButton('love');
     }
 
-    // Create emoji effects
     createEmojiEffects(type);
   };
 
@@ -90,7 +147,6 @@ export const App = () => {
 
     setEmojis(prev => [...prev, ...newEmojis]);
 
-    // Remove emojis after animation
     setTimeout(() => {
       setEmojis(prev => prev.filter(emoji => !newEmojis.some(newEmoji => newEmoji.id === emoji.id)));
     }, 3000);
@@ -105,19 +161,36 @@ export const App = () => {
     setTimeLeft(10);
     setGameStarted(false);
     setDisabledButton(null);
+    setClickSpeed(null);
+    clickTimestamps.current = [];
     if (timerRef.current) {
       clearTimeout(timerRef.current);
     }
   };
 
   const handleClose = () => {
-    // In a real Reddit app, this would close the webview
-    // For now, we'll just restart the game
     handleRestart();
   };
 
   if (gameState === 'loading') {
     return <LoadingScreen />;
+  }
+
+  if (gameState === 'about') {
+    return <AboutGame onClose={() => setGameState('playing')} />;
+  }
+
+  if (gameState === 'score') {
+    return (
+      <MyScore
+        onClose={() => setGameState('playing')}
+        totalGamesPlayed={totalGamesPlayed}
+        totalClicks={totalClicks}
+        totalTimeSpent={totalTimeSpent}
+        bestClickSpeed={Math.round(bestClickSpeed * 10) / 10}
+        favoriteAction={favoriteAction}
+      />
+    );
   }
 
   if (gameState === 'finished') {
@@ -133,12 +206,18 @@ export const App = () => {
 
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center relative overflow-hidden">
+      {/* Top Navigation */}
+      <TopNavigation
+        onAboutGame={() => setGameState('about')}
+        onMyScore={() => setGameState('score')}
+      />
+
       {/* Timer */}
       {gameStarted && (
         <Timer timeLeft={timeLeft} />
       )}
 
-      {/* Main content container - moved higher up */}
+      {/* Main content container */}
       <div className="flex-1 flex items-center justify-center pt-8 pb-32" ref={containerRef}>
         <div className="text-center relative">
           <div className="relative inline-block">
@@ -158,7 +237,7 @@ export const App = () => {
       </div>
 
       {/* Fixed positioned UI elements */}
-      <Counter loveCount={loveCount} irritateCount={irritateCount} />
+      <Counter loveCount={loveCount} irritateCount={irritateCount} clickSpeed={clickSpeed} />
       <GameControls 
         onAction={handleAction} 
         disabled={timeLeft === 0}
