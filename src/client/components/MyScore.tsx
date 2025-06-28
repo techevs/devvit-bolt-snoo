@@ -1,6 +1,7 @@
 import React from 'react';
 import { TopNavigation } from './TopNavigation';
 import { AboutGame } from './AboutGame';
+import { LeaderDashboard } from './LeaderDashboard';
 
 interface MyScoreProps {
   onClose: () => void;
@@ -20,6 +21,7 @@ export const MyScore: React.FC<MyScoreProps> = ({
   favoriteAction 
 }) => {
   const [showAbout, setShowAbout] = React.useState(false);
+  const [showLeaderboard, setShowLeaderboard] = React.useState(false);
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
@@ -54,9 +56,18 @@ export const MyScore: React.FC<MyScoreProps> = ({
     // Already on score page, do nothing
   };
 
+  const handleLeaderboard = () => {
+    setShowLeaderboard(true);
+  };
+
   // Show About Game page
   if (showAbout) {
     return <AboutGame onClose={() => setShowAbout(false)} />;
+  }
+
+  // Show Leaderboard page
+  if (showLeaderboard) {
+    return <LeaderDashboard onClose={() => setShowLeaderboard(false)} />;
   }
 
   return (
@@ -65,6 +76,7 @@ export const MyScore: React.FC<MyScoreProps> = ({
       <TopNavigation
         onAboutGame={handleAboutGame}
         onMyScore={handleMyScore}
+        onLeaderboard={handleLeaderboard}
       />
 
       {/* Close button */}

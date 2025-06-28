@@ -8,9 +8,10 @@ import { ResultPage } from './components/ResultPage';
 import { LoadingScreen } from './components/LoadingScreen';
 import { AboutGame } from './components/AboutGame';
 import { MyScore } from './components/MyScore';
+import { LeaderDashboard } from './components/LeaderDashboard';
 import { TopNavigation } from './components/TopNavigation';
 
-type GameState = 'loading' | 'playing' | 'finished' | 'about' | 'score';
+type GameState = 'loading' | 'playing' | 'finished' | 'about' | 'score' | 'leaderboard';
 type ClickSpeed = 'no-clicks' | 'very-slow' | 'slow' | 'normal' | 'fast' | 'very-fast';
 
 export const App = () => {
@@ -235,6 +236,10 @@ export const App = () => {
     );
   }
 
+  if (gameState === 'leaderboard') {
+    return <LeaderDashboard onClose={() => setGameState('playing')} />;
+  }
+
   if (gameState === 'finished') {
     return (
       <ResultPage
@@ -252,6 +257,7 @@ export const App = () => {
       <TopNavigation
         onAboutGame={() => setGameState('about')}
         onMyScore={() => setGameState('score')}
+        onLeaderboard={() => setGameState('leaderboard')}
       />
 
       {/* Timer */}

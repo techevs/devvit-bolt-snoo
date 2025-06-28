@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { TopNavigation } from './TopNavigation';
 import { AboutGame } from './AboutGame';
 import { MyScore } from './MyScore';
+import { LeaderDashboard } from './LeaderDashboard';
 
 interface ResultPageProps {
   loveCount: number;
@@ -105,6 +106,7 @@ export const ResultPage: React.FC<ResultPageProps> = ({ loveCount, irritateCount
   const [isQuirky, setIsQuirky] = useState<boolean>(false);
   const [showAbout, setShowAbout] = useState(false);
   const [showScore, setShowScore] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   const totalClicks = loveCount + irritateCount;
   const isLoveWinner = loveCount > irritateCount;
@@ -177,7 +179,6 @@ export const ResultPage: React.FC<ResultPageProps> = ({ loveCount, irritateCount
     return '😴';
   };
 
-  // ✅ FIXED: Proper navigation handlers
   const handleAboutGame = () => {
     setShowAbout(true);
   };
@@ -186,12 +187,16 @@ export const ResultPage: React.FC<ResultPageProps> = ({ loveCount, irritateCount
     setShowScore(true);
   };
 
-  // ✅ FIXED: Show About Game page
+  const handleLeaderboard = () => {
+    setShowLeaderboard(true);
+  };
+
+  // Show About Game page
   if (showAbout) {
     return <AboutGame onClose={() => setShowAbout(false)} />;
   }
 
-  // ✅ FIXED: Show My Score page with proper data
+  // Show My Score page with proper data
   if (showScore) {
     return (
       <MyScore
@@ -205,15 +210,21 @@ export const ResultPage: React.FC<ResultPageProps> = ({ loveCount, irritateCount
     );
   }
 
+  // Show Leaderboard page
+  if (showLeaderboard) {
+    return <LeaderDashboard onClose={() => setShowLeaderboard(false)} />;
+  }
+
   return (
     <div
       className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden"
       style={{ background: getBackgroundGradient() }}
     >
-      {/* ✅ FIXED: Top Navigation with working handlers */}
+      {/* Top Navigation with working handlers */}
       <TopNavigation
         onAboutGame={handleAboutGame}
         onMyScore={handleMyScore}
+        onLeaderboard={handleLeaderboard}
       />
 
       {/* Decorative background elements */}

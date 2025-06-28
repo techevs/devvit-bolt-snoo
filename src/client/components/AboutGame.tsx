@@ -1,6 +1,7 @@
 import React from 'react';
 import { TopNavigation } from './TopNavigation';
 import { MyScore } from './MyScore';
+import { LeaderDashboard } from './LeaderDashboard';
 
 interface AboutGameProps {
   onClose: () => void;
@@ -8,6 +9,7 @@ interface AboutGameProps {
 
 export const AboutGame: React.FC<AboutGameProps> = ({ onClose }) => {
   const [showScore, setShowScore] = React.useState(false);
+  const [showLeaderboard, setShowLeaderboard] = React.useState(false);
 
   const handleAboutGame = () => {
     // Already on about page, do nothing
@@ -15,6 +17,10 @@ export const AboutGame: React.FC<AboutGameProps> = ({ onClose }) => {
 
   const handleMyScore = () => {
     setShowScore(true);
+  };
+
+  const handleLeaderboard = () => {
+    setShowLeaderboard(true);
   };
 
   // Show My Score page
@@ -31,12 +37,18 @@ export const AboutGame: React.FC<AboutGameProps> = ({ onClose }) => {
     );
   }
 
+  // Show Leaderboard page
+  if (showLeaderboard) {
+    return <LeaderDashboard onClose={() => setShowLeaderboard(false)} />;
+  }
+
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center relative overflow-hidden p-6">
       {/* Top Navigation */}
       <TopNavigation
         onAboutGame={handleAboutGame}
         onMyScore={handleMyScore}
+        onLeaderboard={handleLeaderboard}
       />
 
       {/* Close button */}
