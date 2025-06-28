@@ -62,35 +62,35 @@ export const ResultPage: React.FC<ResultPageProps> = ({ loveCount, irritateCount
         </div>
 
         {/* Result message */}
-        <h1 className="text-3xl font-bold mb-8">
+        <h1 className="text-3xl font-bold mb-8 text-white drop-shadow-lg">
           {getResultMessage()}
         </h1>
 
         {/* Stats */}
-        <div className="bg-white bg-opacity-20 rounded-2xl p-6 mb-8 backdrop-blur-sm">
-          <h2 className="text-xl font-semibold mb-4">Game Results</h2>
+        <div className="bg-black bg-opacity-30 rounded-2xl p-6 mb-8 backdrop-blur-sm border border-white border-opacity-20">
+          <h2 className="text-xl font-semibold mb-4 text-white">Game Results</h2>
           
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="flex items-center gap-2">
+              <span className="flex items-center gap-2 text-white">
                 <span className="text-xl">❤️</span>
                 Love clicks:
               </span>
-              <span className="font-bold text-xl">{loveCount}</span>
+              <span className="font-bold text-xl text-white">{loveCount}</span>
             </div>
             
             <div className="flex justify-between items-center">
-              <span className="flex items-center gap-2">
+              <span className="flex items-center gap-2 text-white">
                 <span className="text-xl">😤</span>
                 Irritate clicks:
               </span>
-              <span className="font-bold text-xl">{irritateCount}</span>
+              <span className="font-bold text-xl text-white">{irritateCount}</span>
             </div>
             
             <div className="border-t border-white border-opacity-30 pt-3 mt-3">
               <div className="flex justify-between items-center">
-                <span className="font-semibold">Total clicks:</span>
-                <span className="font-bold text-xl">{totalClicks}</span>
+                <span className="font-semibold text-white">Total clicks:</span>
+                <span className="font-bold text-xl text-white">{totalClicks}</span>
               </div>
             </div>
           </div>
@@ -107,7 +107,7 @@ export const ResultPage: React.FC<ResultPageProps> = ({ loveCount, irritateCount
           
           <button
             onClick={onClose}
-            className="bg-white bg-opacity-20 text-white px-8 py-4 rounded-full font-bold text-lg border-2 border-white border-opacity-50 hover:bg-opacity-30 transform hover:-translate-y-1 transition-all duration-200 backdrop-blur-sm"
+            className="bg-black bg-opacity-20 text-white px-8 py-4 rounded-full font-bold text-lg border-2 border-white border-opacity-50 hover:bg-opacity-30 transform hover:-translate-y-1 transition-all duration-200 backdrop-blur-sm"
           >
             ✖️ Close
           </button>
