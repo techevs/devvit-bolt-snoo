@@ -5,7 +5,7 @@ import { defineConfig } from '@devvit/server';
 import '../server/index';
 
 defineConfig({
-  name: 'Hello App',
+  name: 'Snoo Pet Game',
   entry: 'index.html',
   height: 'regular',
   menu: { enable: false },
@@ -15,14 +15,17 @@ export const Preview: Devvit.BlockComponent = () => {
   return (
     <vstack width={'100%'} height={'100%'} alignment="center middle">
       <text size="large" weight="bold">
-        Hello App
+        Snoo Pet Game
+      </text>
+      <text size="medium" color="neutral-content-weak">
+        Love or irritate Snoo with emoji effects!
       </text>
     </vstack>
   );
 };
 
 Devvit.addMenuItem({
-  label: 'Create Hello Post',
+  label: 'Create Snoo Pet Game',
   location: 'subreddit',
   forUserType: 'moderator',
   onPress: async (_event, context) => {
@@ -31,11 +34,11 @@ Devvit.addMenuItem({
     try {
       const subreddit = await reddit.getCurrentSubreddit();
       const post = await reddit.submitPost({
-        title: 'Hello App',
+        title: 'Snoo Pet Game - Love or Irritate Snoo!',
         subredditName: subreddit.name,
         preview: <Preview />,
       });
-      ui.showToast({ text: 'Created post!' });
+      ui.showToast({ text: 'Created Snoo Pet Game post!' });
       ui.navigateTo(post.url);
     } catch (error) {
       if (error instanceof Error) {

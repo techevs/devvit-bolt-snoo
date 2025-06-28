@@ -1,14 +1,30 @@
 <!doctype html>
-<html lang="en" class="dark h-full">
+<html lang="en" class="h-full">
   <head>
     <meta charset="UTF-8" />
     <meta
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <title>Hello App</title>
+    <title>Snoo Pet Game</title>
+    <style>
+      @keyframes throwEmoji {
+        0% {
+          opacity: 1;
+          transform: translate(0, 0) rotate(0deg) scale(0.5);
+        }
+        50% {
+          opacity: 1;
+          transform: translate(var(--dx), var(--dy)) rotate(180deg) scale(1.2);
+        }
+        100% {
+          opacity: 0;
+          transform: translate(calc(var(--dx) * 1.5), calc(var(--dy) * 1.5)) rotate(360deg) scale(0.3);
+        }
+      }
+    </style>
   </head>
-  <body class="h-full bg-gray-900">
+  <body class="h-full bg-white">
     <div id="root" class="h-full"></div>
     <script type="module" src="main.tsx"></script>
   </body>
