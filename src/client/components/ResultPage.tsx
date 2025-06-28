@@ -43,7 +43,7 @@ export const ResultPage: React.FC<ResultPageProps> = ({ loveCount, irritateCount
 
   return (
     <div 
-      className="min-h-screen flex flex-col items-center justify-center text-white relative overflow-hidden"
+      className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden"
       style={{ background: getBackgroundGradient() }}
     >
       {/* Decorative background elements */}
@@ -62,35 +62,41 @@ export const ResultPage: React.FC<ResultPageProps> = ({ loveCount, irritateCount
         </div>
 
         {/* Result message */}
-        <h1 className="text-3xl font-bold mb-8 text-white drop-shadow-lg">
+        <h1 className="text-3xl font-bold mb-8" style={{ color: '#ffffff', textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}>
           {getResultMessage()}
         </h1>
 
         {/* Stats */}
-        <div className="bg-black bg-opacity-30 rounded-2xl p-6 mb-8 backdrop-blur-sm border border-white border-opacity-20">
-          <h2 className="text-xl font-semibold mb-4 text-white">Game Results</h2>
+        <div className="rounded-2xl p-6 mb-8 border-2" style={{ 
+          backgroundColor: 'rgba(0, 0, 0, 0.6)', 
+          borderColor: 'rgba(255, 255, 255, 0.3)',
+          backdropFilter: 'blur(10px)'
+        }}>
+          <h2 className="text-xl font-semibold mb-4" style={{ color: '#ffffff' }}>
+            Game Results
+          </h2>
           
           <div className="space-y-3">
             <div className="flex justify-between items-center">
-              <span className="flex items-center gap-2 text-white">
+              <span className="flex items-center gap-2" style={{ color: '#ffffff' }}>
                 <span className="text-xl">❤️</span>
                 Love clicks:
               </span>
-              <span className="font-bold text-xl text-white">{loveCount}</span>
+              <span className="font-bold text-xl" style={{ color: '#ffffff' }}>{loveCount}</span>
             </div>
             
             <div className="flex justify-between items-center">
-              <span className="flex items-center gap-2 text-white">
+              <span className="flex items-center gap-2" style={{ color: '#ffffff' }}>
                 <span className="text-xl">😤</span>
                 Irritate clicks:
               </span>
-              <span className="font-bold text-xl text-white">{irritateCount}</span>
+              <span className="font-bold text-xl" style={{ color: '#ffffff' }}>{irritateCount}</span>
             </div>
             
-            <div className="border-t border-white border-opacity-30 pt-3 mt-3">
+            <div className="border-t pt-3 mt-3" style={{ borderColor: 'rgba(255, 255, 255, 0.3)' }}>
               <div className="flex justify-between items-center">
-                <span className="font-semibold text-white">Total clicks:</span>
-                <span className="font-bold text-xl text-white">{totalClicks}</span>
+                <span className="font-semibold" style={{ color: '#ffffff' }}>Total clicks:</span>
+                <span className="font-bold text-xl" style={{ color: '#ffffff' }}>{totalClicks}</span>
               </div>
             </div>
           </div>
@@ -100,14 +106,25 @@ export const ResultPage: React.FC<ResultPageProps> = ({ loveCount, irritateCount
         <div className="flex flex-col gap-4">
           <button
             onClick={onRestart}
-            className="bg-white text-gray-800 px-8 py-4 rounded-full font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200"
+            className="px-8 py-4 rounded-full font-bold text-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-200"
+            style={{ 
+              backgroundColor: '#ffffff', 
+              color: '#1f2937',
+              border: 'none'
+            }}
           >
             🔄 Play Again
           </button>
           
           <button
             onClick={onClose}
-            className="bg-black bg-opacity-20 text-white px-8 py-4 rounded-full font-bold text-lg border-2 border-white border-opacity-50 hover:bg-opacity-30 transform hover:-translate-y-1 transition-all duration-200 backdrop-blur-sm"
+            className="px-8 py-4 rounded-full font-bold text-lg border-2 hover:transform hover:-translate-y-1 transition-all duration-200"
+            style={{ 
+              backgroundColor: 'rgba(0, 0, 0, 0.3)', 
+              color: '#ffffff',
+              borderColor: 'rgba(255, 255, 255, 0.5)',
+              backdropFilter: 'blur(10px)'
+            }}
           >
             ✖️ Close
           </button>
