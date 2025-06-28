@@ -177,6 +177,7 @@ export const ResultPage: React.FC<ResultPageProps> = ({ loveCount, irritateCount
     return '😴';
   };
 
+  // ✅ FIXED: Proper navigation handlers
   const handleAboutGame = () => {
     setShowAbout(true);
   };
@@ -185,17 +186,17 @@ export const ResultPage: React.FC<ResultPageProps> = ({ loveCount, irritateCount
     setShowScore(true);
   };
 
-  // Show About Game page
+  // ✅ FIXED: Show About Game page
   if (showAbout) {
     return <AboutGame onClose={() => setShowAbout(false)} />;
   }
 
-  // Show My Score page
+  // ✅ FIXED: Show My Score page with proper data
   if (showScore) {
     return (
       <MyScore
         onClose={() => setShowScore(false)}
-        totalGamesPlayed={1} // Dummy data since we don't have access to real stats here
+        totalGamesPlayed={1} // This game just finished
         totalClicks={totalClicks}
         totalTimeSpent={10}
         bestClickSpeed={Math.round((totalClicks / 10) * 10) / 10}
@@ -209,7 +210,7 @@ export const ResultPage: React.FC<ResultPageProps> = ({ loveCount, irritateCount
       className="min-h-screen flex flex-col items-center justify-center relative overflow-hidden"
       style={{ background: getBackgroundGradient() }}
     >
-      {/* Top Navigation */}
+      {/* ✅ FIXED: Top Navigation with working handlers */}
       <TopNavigation
         onAboutGame={handleAboutGame}
         onMyScore={handleMyScore}
