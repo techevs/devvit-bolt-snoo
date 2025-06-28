@@ -11,7 +11,7 @@ import { MyScore } from './components/MyScore';
 import { TopNavigation } from './components/TopNavigation';
 
 type GameState = 'loading' | 'playing' | 'finished' | 'about' | 'score';
-type ClickSpeed = 'slow' | 'normal' | 'fast' | 'very-fast' | null;
+type ClickSpeed = 'no-clicks' | 'very-slow' | 'slow' | 'normal' | 'fast' | 'very-fast';
 
 export const App = () => {
   const [gameState, setGameState] = useState<GameState>('loading');
@@ -22,7 +22,7 @@ export const App = () => {
   const [timeLeft, setTimeLeft] = useState(10);
   const [gameStarted, setGameStarted] = useState(false);
   const [disabledButton, setDisabledButton] = useState<'love' | 'irritate' | null>(null);
-  const [clickSpeed, setClickSpeed] = useState<ClickSpeed>(null);
+  const [clickSpeed, setClickSpeed] = useState<ClickSpeed>('no-clicks');
   
   // Stats tracking
   const [totalGamesPlayed, setTotalGamesPlayed] = useState(0);
@@ -33,7 +33,9 @@ export const App = () => {
   
   const containerRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+  const speedCheckRef = useRef<NodeJS.Timeout | null>(null);
   const clickTimestamps = useRef<number[]>([]);
+  const lastClickTime = useRef<number>(0);
 
   // Loading effect
   useEffect(() => {
@@ -44,6 +46,7 @@ export const App = () => {
     return () => clearTimeout(loadingTimer);
   }, []);
 
+  // Timer countdown - runs independently
   useEffect(() => {
     if (gameStarted && timeLeft > 0) {
       timerRef.current = setTimeout(() => {
@@ -78,35 +81,68 @@ export const App = () => {
     };
   }, [timeLeft, gameStarted, loveCount, irritateCount]);
 
-  // Calculate click speed based on recent clicks
+  // Speed calculation - runs every 500ms when game is active
   useEffect(() => {
-    const now = Date.now();
-    const recentClicks = clickTimestamps.current.filter(timestamp => now - timestamp < 2000); // Last 2 seconds
-    const clicksPerSecond = recentClicks.length / 2;
+    if (gameStarted && timeLeft > 0) {
+      const checkSpeed = () => {
+        const now = Date.now();
+        const totalClicks = loveCount + irritateCount;
+        
+        // If no clicks at all
+        if (totalClicks === 0) {
+          setClickSpeed('no-clicks');
+        } else {
+          // Check recent activity (last 3 seconds)
+          const recentClicks = clickTimestamps.current.filter(timestamp => now - timestamp < 3000);
+          const timeSinceLastClick = now - lastClickTime.current;
+          
+          // If no recent clicks (more than 3 seconds since last click)
+          if (timeSinceLastClick > 3000) {
+            setClickSpeed('very-slow');
+          } else {
+            // Calculate clicks per second based on recent activity
+            const clicksPerSecond = recentClicks.length / 3;
+            
+            if (clicksPerSecond >= 2.5) {
+              setClickSpeed('very-fast');
+            } else if (clicksPerSecond >= 1.5) {
+              setClickSpeed('fast');
+            } else if (clicksPerSecond >= 0.8) {
+              setClickSpeed('normal');
+            } else {
+              setClickSpeed('slow');
+            }
+          }
+        }
+      };
 
-    if (clicksPerSecond >= 3) {
-      setClickSpeed('very-fast');
-    } else if (clicksPerSecond >= 2) {
-      setClickSpeed('fast');
-    } else if (clicksPerSecond >= 1) {
-      setClickSpeed('normal');
-    } else if (recentClicks.length > 0) {
-      setClickSpeed('slow');
-    } else {
-      setClickSpeed(null);
+      // Initial check
+      checkSpeed();
+      
+      // Set up interval for continuous speed checking
+      speedCheckRef.current = setInterval(checkSpeed, 500);
     }
-  }, [loveCount, irritateCount]);
+
+    return () => {
+      if (speedCheckRef.current) {
+        clearInterval(speedCheckRef.current);
+      }
+    };
+  }, [gameStarted, timeLeft, loveCount, irritateCount]);
 
   const handleAction = (type: 'love' | 'irritate') => {
     if (!gameStarted) {
       setGameStarted(true);
     }
 
+    const now = Date.now();
+    lastClickTime.current = now;
+
     // Track click timestamp
-    clickTimestamps.current.push(Date.now());
-    // Keep only last 10 clicks for performance
-    if (clickTimestamps.current.length > 10) {
-      clickTimestamps.current = clickTimestamps.current.slice(-10);
+    clickTimestamps.current.push(now);
+    // Keep only last 20 clicks for performance
+    if (clickTimestamps.current.length > 20) {
+      clickTimestamps.current = clickTimestamps.current.slice(-20);
     }
 
     if (type === 'love') {
@@ -161,10 +197,16 @@ export const App = () => {
     setTimeLeft(10);
     setGameStarted(false);
     setDisabledButton(null);
-    setClickSpeed(null);
+    setClickSpeed('no-clicks');
     clickTimestamps.current = [];
+    lastClickTime.current = 0;
+    
+    // Clear all timers
     if (timerRef.current) {
       clearTimeout(timerRef.current);
+    }
+    if (speedCheckRef.current) {
+      clearInterval(speedCheckRef.current);
     }
   };
 
