@@ -344,10 +344,6 @@ export const ResultPage: React.FC<ResultPageProps> = ({ loveCount, irritateCount
 
       {/* Main content */}
       <div className="text-center z-10 px-6 max-w-md">
-        {/* Large Snoo emoji */}
-        <div className="text-8xl mb-6 animate-bounce">
-          {getSnooEmoji()}
-        </div>
 
         {/* Result message */}
         <h1 className="text-3xl font-bold mb-6" style={{ color: '#ffffff', textShadow: '2px 2px 4px rgba(0,0,0,0.5)' }}>
