@@ -5,11 +5,12 @@ import { Counter } from './components/Counter';
 import { EmojiEffect } from './components/EmojiEffect';
 import { Timer } from './components/Timer';
 import { ResultPage } from './components/ResultPage';
+import { LoadingScreen } from './components/LoadingScreen';
 
-type GameState = 'playing' | 'finished';
+type GameState = 'loading' | 'playing' | 'finished';
 
 export const App = () => {
-  const [gameState, setGameState] = useState<GameState>('playing');
+  const [gameState, setGameState] = useState<GameState>('loading');
   const [snooMood, setSnooMood] = useState<'happy' | 'sad'>('happy');
   const [loveCount, setLoveCount] = useState(0);
   const [irritateCount, setIrritateCount] = useState(0);
@@ -19,6 +20,15 @@ export const App = () => {
   const [disabledButton, setDisabledButton] = useState<'love' | 'irritate' | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Loading effect
+  useEffect(() => {
+    const loadingTimer = setTimeout(() => {
+      setGameState('playing');
+    }, 2000); // Show loading for 2 seconds
+
+    return () => clearTimeout(loadingTimer);
+  }, []);
 
   useEffect(() => {
     if (gameStarted && timeLeft > 0) {
@@ -105,6 +115,10 @@ export const App = () => {
     // For now, we'll just restart the game
     handleRestart();
   };
+
+  if (gameState === 'loading') {
+    return <LoadingScreen />;
+  }
 
   if (gameState === 'finished') {
     return (
