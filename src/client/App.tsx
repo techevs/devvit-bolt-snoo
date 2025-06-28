@@ -56,23 +56,27 @@ export const App = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex items-center justify-center relative overflow-hidden">
-      <div className="text-center relative z-10" ref={containerRef}>
-        <div className="relative inline-block m-12">
-          <SnooAnimation mood={snooMood} />
-          {emojis.map(emoji => (
-            <EmojiEffect
-              key={emoji.id}
-              type={emoji.type}
-              x={emoji.x}
-              y={emoji.y}
-              dx={emoji.dx}
-              dy={emoji.dy}
-            />
-          ))}
+    <div className="min-h-screen bg-white flex flex-col items-center justify-center relative overflow-hidden">
+      {/* Main content container - moved higher up */}
+      <div className="flex-1 flex items-center justify-center pt-8 pb-32" ref={containerRef}>
+        <div className="text-center relative">
+          <div className="relative inline-block">
+            <SnooAnimation mood={snooMood} />
+            {emojis.map(emoji => (
+              <EmojiEffect
+                key={emoji.id}
+                type={emoji.type}
+                x={emoji.x}
+                y={emoji.y}
+                dx={emoji.dx}
+                dy={emoji.dy}
+              />
+            ))}
+          </div>
         </div>
       </div>
 
+      {/* Fixed positioned UI elements */}
       <Counter loveCount={loveCount} irritateCount={irritateCount} />
       <GameControls onAction={handleAction} />
     </div>

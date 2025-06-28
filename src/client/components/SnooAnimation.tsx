@@ -6,7 +6,7 @@ interface SnooAnimationProps {
 
 export const SnooAnimation: React.FC<SnooAnimationProps> = ({ mood }) => {
   return (
-    <div className="w-96 h-96 transition-transform duration-300 ease-in-out">
+    <div className="w-80 h-80 transition-transform duration-300 ease-in-out">
       {mood === 'happy' ? <HappySnoo /> : <SadSnoo />}
     </div>
   );
