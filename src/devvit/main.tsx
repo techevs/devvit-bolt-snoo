@@ -25,9 +25,19 @@ export const App: Devvit.CustomPostComponent = (context) => {
 
             console.log(`Attempting to save ${clicks} clicks to Redis`);
             
-            // Use context.redis instead of destructured redis
-            const newTotal = await context.redis.incrby('total_clicks', clicks);
-            console.log(`Successfully saved clicks. New total: ${newTotal}`);
+            // Check if redis is available in context
+            if (!context.redis) {
+              console.error('Redis not available in context');
+              return { type: 'ERROR', data: { message: 'Redis not available' } };
+            }
+            
+            // Use await with proper error handling
+            const currentValue = await context.redis.get('total_clicks');
+            const currentTotal = currentValue ? parseInt(currentValue, 10) : 0;
+            const newTotal = currentTotal + clicks;
+            
+            await context.redis.set('total_clicks', newTotal.toString());
+            console.log(`Successfully saved clicks. Previous: ${currentTotal}, Added: ${clicks}, New total: ${newTotal}`);
             
             return { type: 'CLICKS_SAVED', data: { totalClicks: newTotal } };
           } catch (error) {
@@ -39,7 +49,12 @@ export const App: Devvit.CustomPostComponent = (context) => {
           try {
             console.log('Retrieving total clicks from Redis');
             
-            // Use context.redis instead of destructured redis
+            // Check if redis is available in context
+            if (!context.redis) {
+              console.error('Redis not available in context');
+              return { type: 'ERROR', data: { message: 'Redis not available' } };
+            }
+            
             const clicks = await context.redis.get('total_clicks');
             const count = clicks ? parseInt(clicks, 10) : 0;
             console.log('Retrieved total clicks from Redis:', count);
