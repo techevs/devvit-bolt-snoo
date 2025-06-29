@@ -8,11 +8,10 @@ Devvit.configure({
 });
 
 export const App: Devvit.CustomPostComponent = (context) => {
-  const { redis } = context;
   const [webviewVisible, setWebviewVisible] = useState(false);
 
   const onMessage = async (msg: any) => {
-    console.log('Received message in Devvit:', msg);
+    console.log('Received message in Devvit:', JSON.stringify(msg));
     
     try {
       switch (msg.type) {
@@ -24,27 +23,31 @@ export const App: Devvit.CustomPostComponent = (context) => {
               return { type: 'ERROR', data: { message: 'Invalid clicks value' } };
             }
 
-            console.log(`Saving ${clicks} clicks to Redis`);
-            const newTotal = await redis.incrby('total_clicks', clicks);
+            console.log(`Attempting to save ${clicks} clicks to Redis`);
+            
+            // Use context.redis instead of destructured redis
+            const newTotal = await context.redis.incrby('total_clicks', clicks);
             console.log(`Successfully saved clicks. New total: ${newTotal}`);
             
             return { type: 'CLICKS_SAVED', data: { totalClicks: newTotal } };
           } catch (error) {
             console.error('Error saving clicks to Redis:', error);
-            return { type: 'ERROR', data: { message: 'Failed to save clicks to storage' } };
+            return { type: 'ERROR', data: { message: `Failed to save clicks: ${error}` } };
           }
           
         case 'GET_TOTAL_CLICKS':
           try {
             console.log('Retrieving total clicks from Redis');
-            const clicks = await redis.get('total_clicks');
+            
+            // Use context.redis instead of destructured redis
+            const clicks = await context.redis.get('total_clicks');
             const count = clicks ? parseInt(clicks, 10) : 0;
             console.log('Retrieved total clicks from Redis:', count);
             
             return { type: 'TOTAL_CLICKS', data: { totalClicks: count } };
           } catch (error) {
             console.error('Error getting total clicks from Redis:', error);
-            return { type: 'ERROR', data: { message: 'Failed to get total clicks from storage' } };
+            return { type: 'ERROR', data: { message: `Failed to get total clicks: ${error}` } };
           }
           
         default:
@@ -53,7 +56,7 @@ export const App: Devvit.CustomPostComponent = (context) => {
       }
     } catch (error) {
       console.error('Error processing message:', error);
-      return { type: 'ERROR', data: { message: 'Internal error processing message' } };
+      return { type: 'ERROR', data: { message: `Internal error: ${error}` } };
     }
   };
 
