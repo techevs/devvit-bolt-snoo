@@ -14,31 +14,46 @@ export const App: Devvit.CustomPostComponent = (context) => {
   const onMessage = async (msg: any) => {
     console.log('Received message in Devvit:', msg);
     
-    switch (msg.type) {
-      case 'SAVE_CLICKS':
-        try {
-          const newTotal = await redis.incrby('total_clicks', msg.data.clicks);
-          console.log(`Added ${msg.data.clicks} clicks. New total: ${newTotal}`);
-          return { type: 'CLICKS_SAVED', data: { totalClicks: newTotal } };
-        } catch (error) {
-          console.error('Error saving clicks:', error);
-          return { type: 'ERROR', data: { message: 'Failed to save clicks' } };
-        }
-        
-      case 'GET_TOTAL_CLICKS':
-        try {
-          const clicks = await redis.get('total_clicks');
-          const count = clicks ? parseInt(clicks) : 0;
-          console.log('Retrieved total clicks:', count);
-          return { type: 'TOTAL_CLICKS', data: { totalClicks: count } };
-        } catch (error) {
-          console.error('Error getting total clicks:', error);
-          return { type: 'ERROR', data: { message: 'Failed to get total clicks' } };
-        }
-        
-      default:
-        console.log('Unknown message type:', msg.type);
-        return { type: 'UNKNOWN' };
+    try {
+      switch (msg.type) {
+        case 'SAVE_CLICKS':
+          try {
+            const clicks = msg.data?.clicks;
+            if (typeof clicks !== 'number' || clicks <= 0) {
+              console.error('Invalid clicks value:', clicks);
+              return { type: 'ERROR', data: { message: 'Invalid clicks value' } };
+            }
+
+            console.log(`Saving ${clicks} clicks to Redis`);
+            const newTotal = await redis.incrby('total_clicks', clicks);
+            console.log(`Successfully saved clicks. New total: ${newTotal}`);
+            
+            return { type: 'CLICKS_SAVED', data: { totalClicks: newTotal } };
+          } catch (error) {
+            console.error('Error saving clicks to Redis:', error);
+            return { type: 'ERROR', data: { message: 'Failed to save clicks to storage' } };
+          }
+          
+        case 'GET_TOTAL_CLICKS':
+          try {
+            console.log('Retrieving total clicks from Redis');
+            const clicks = await redis.get('total_clicks');
+            const count = clicks ? parseInt(clicks, 10) : 0;
+            console.log('Retrieved total clicks from Redis:', count);
+            
+            return { type: 'TOTAL_CLICKS', data: { totalClicks: count } };
+          } catch (error) {
+            console.error('Error getting total clicks from Redis:', error);
+            return { type: 'ERROR', data: { message: 'Failed to get total clicks from storage' } };
+          }
+          
+        default:
+          console.log('Unknown message type:', msg.type);
+          return { type: 'ERROR', data: { message: 'Unknown message type' } };
+      }
+    } catch (error) {
+      console.error('Error processing message:', error);
+      return { type: 'ERROR', data: { message: 'Internal error processing message' } };
     }
   };
 
@@ -65,7 +80,7 @@ export const App: Devvit.CustomPostComponent = (context) => {
         Love or irritate Snoo with emoji effects!
       </text>
       <text size="small" color="neutral-content-weak" alignment="center">
-        Click below to start playing and track your clicks!
+        Click below to start playing and track your clicks across all sessions!
       </text>
       <button
         appearance="primary"
@@ -112,6 +127,7 @@ Devvit.addMenuItem({
       ui.showToast({ text: 'Created Surprise Snoo game post!' });
       ui.navigateTo(post.url);
     } catch (error) {
+      console.error('Error creating post:', error);
       if (error instanceof Error) {
         ui.showToast({ text: `Error creating post: ${error.message}` });
       } else {

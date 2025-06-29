@@ -64,11 +64,11 @@ export const App = () => {
 
   const saveClicksToDevvit = async (clicks: number) => {
     try {
+      console.log(`Attempting to save ${clicks} clicks to Devvit`);
       sendMessageToDevvit({
         type: 'SAVE_CLICKS',
         data: { clicks }
       });
-      console.log(`Sent ${clicks} clicks to Devvit for saving`);
     } catch (error) {
       console.error('Error saving clicks to Devvit:', error);
     }
@@ -76,11 +76,11 @@ export const App = () => {
 
   const getTotalClicksFromDevvit = () => {
     try {
+      console.log('Requesting total clicks from Devvit');
       sendMessageToDevvit({
         type: 'GET_TOTAL_CLICKS',
         data: {}
       });
-      console.log('Requested total clicks from Devvit');
     } catch (error) {
       console.error('Error getting total clicks from Devvit:', error);
     }
@@ -92,13 +92,15 @@ export const App = () => {
       console.log('Received message from Devvit:', event.data);
       
       if (event.data?.type === 'TOTAL_CLICKS') {
-        setTotalClicksAllTime(event.data.data.totalClicks);
-        console.log('Updated total clicks from Devvit:', event.data.data.totalClicks);
+        const totalClicks = event.data.data.totalClicks || 0;
+        setTotalClicksAllTime(totalClicks);
+        console.log('Updated total clicks from Devvit:', totalClicks);
       } else if (event.data?.type === 'CLICKS_SAVED') {
-        setTotalClicksAllTime(event.data.data.totalClicks);
-        console.log('Clicks saved, new total:', event.data.data.totalClicks);
+        const totalClicks = event.data.data.totalClicks || 0;
+        setTotalClicksAllTime(totalClicks);
+        console.log('Clicks saved successfully, new total:', totalClicks);
       } else if (event.data?.type === 'ERROR') {
-        console.error('Error from Devvit:', event.data.data.message);
+        console.error('Error from Devvit:', event.data.data?.message || 'Unknown error');
       }
     };
 
@@ -137,6 +139,7 @@ export const App = () => {
       // Save clicks to Devvit when game finishes
       const totalGameClicks = loveCount + irritateCount;
       if (totalGameClicks > 0) {
+        console.log(`Game finished with ${totalGameClicks} clicks, saving to storage`);
         saveClicksToDevvit(totalGameClicks);
       }
       
@@ -218,6 +221,7 @@ export const App = () => {
   const handleAction = (type: 'love' | 'irritate') => {
     if (!gameStarted) {
       setGameStarted(true);
+      console.log('Game started!');
     }
 
     const now = Date.now();
@@ -231,11 +235,19 @@ export const App = () => {
     }
 
     if (type === 'love') {
-      setLoveCount(prev => prev + 1);
+      setLoveCount(prev => {
+        const newCount = prev + 1;
+        console.log(`Love count: ${newCount}`);
+        return newCount;
+      });
       setSnooMood('happy');
       setDisabledButton('irritate');
     } else {
-      setIrritateCount(prev => prev + 1);
+      setIrritateCount(prev => {
+        const newCount = prev + 1;
+        console.log(`Irritate count: ${newCount}`);
+        return newCount;
+      });
       setSnooMood('sad');
       setDisabledButton('love');
     }
@@ -274,6 +286,7 @@ export const App = () => {
   };
 
   const handleRestart = () => {
+    console.log('Restarting game');
     setGameState('playing');
     setSnooMood('happy');
     setLoveCount(0);
@@ -296,6 +309,7 @@ export const App = () => {
   };
 
   const handleClose = () => {
+    console.log('Closing game');
     handleRestart();
   };
 
@@ -344,12 +358,12 @@ export const App = () => {
         onLeaderboard={() => setGameState('leaderboard')}
       />
 
-      {/* Total Clicks Display */}
+      {/* Total Clicks Display - Only show if we have data */}
       {totalClicksAllTime > 0 && (
         <div className="fixed top-20 left-0 right-0 flex justify-center z-20 px-4">
           <div className="bg-gray-800 bg-opacity-80 backdrop-blur-lg rounded-2xl px-4 py-2 border border-white border-opacity-30">
             <div className="text-white text-sm font-medium text-center">
-              🌟 Total Clicks Across All Sessions: <span className="font-bold text-yellow-300">{totalClicksAllTime.toLocaleString()}</span>
+              🌟 Total Clicks: <span className="font-bold text-yellow-300">{totalClicksAllTime.toLocaleString()}</span>
             </div>
           </div>
         </div>
