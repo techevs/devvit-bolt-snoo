@@ -14,6 +14,15 @@ import { TopNavigation } from './components/TopNavigation';
 type GameState = 'loading' | 'playing' | 'finished' | 'about' | 'score' | 'leaderboard';
 type ClickSpeed = 'no-clicks' | 'very-slow' | 'slow' | 'normal' | 'fast' | 'very-fast';
 
+// Devvit webview messaging
+declare global {
+  interface Window {
+    parent: {
+      postMessage: (message: any, origin: string) => void;
+    };
+  }
+}
+
 export const App = () => {
   const [gameState, setGameState] = useState<GameState>('loading');
   const [snooMood, setSnooMood] = useState<'happy' | 'sad'>('happy');
@@ -24,6 +33,7 @@ export const App = () => {
   const [gameStarted, setGameStarted] = useState(false);
   const [disabledButton, setDisabledButton] = useState<'love' | 'irritate' | null>(null);
   const [clickSpeed, setClickSpeed] = useState<ClickSpeed>('no-clicks');
+  const [totalClicksAllTime, setTotalClicksAllTime] = useState(0);
   
   // Stats tracking
   const [totalGamesPlayed, setTotalGamesPlayed] = useState(0);
@@ -37,6 +47,74 @@ export const App = () => {
   const speedCheckRef = useRef<NodeJS.Timeout | null>(null);
   const clickTimestamps = useRef<number[]>([]);
   const lastClickTime = useRef<number>(0);
+
+  // Devvit messaging functions
+  const sendMessageToDevvit = (message: any) => {
+    try {
+      if (window.parent && window.parent.postMessage) {
+        window.parent.postMessage(message, '*');
+        console.log('Sent message to Devvit:', message);
+      } else {
+        console.log('Parent window not available, running in standalone mode');
+      }
+    } catch (error) {
+      console.error('Error sending message to Devvit:', error);
+    }
+  };
+
+  const saveClicksToDevvit = async (clicks: number) => {
+    try {
+      sendMessageToDevvit({
+        type: 'SAVE_CLICKS',
+        data: { clicks }
+      });
+      console.log(`Sent ${clicks} clicks to Devvit for saving`);
+    } catch (error) {
+      console.error('Error saving clicks to Devvit:', error);
+    }
+  };
+
+  const getTotalClicksFromDevvit = () => {
+    try {
+      sendMessageToDevvit({
+        type: 'GET_TOTAL_CLICKS',
+        data: {}
+      });
+      console.log('Requested total clicks from Devvit');
+    } catch (error) {
+      console.error('Error getting total clicks from Devvit:', error);
+    }
+  };
+
+  // Listen for messages from Devvit
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      console.log('Received message from Devvit:', event.data);
+      
+      if (event.data?.type === 'TOTAL_CLICKS') {
+        setTotalClicksAllTime(event.data.data.totalClicks);
+        console.log('Updated total clicks from Devvit:', event.data.data.totalClicks);
+      } else if (event.data?.type === 'CLICKS_SAVED') {
+        setTotalClicksAllTime(event.data.data.totalClicks);
+        console.log('Clicks saved, new total:', event.data.data.totalClicks);
+      } else if (event.data?.type === 'ERROR') {
+        console.error('Error from Devvit:', event.data.data.message);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, []);
+
+  // Fetch total clicks on app start
+  useEffect(() => {
+    // Small delay to ensure webview is ready
+    const timer = setTimeout(() => {
+      getTotalClicksFromDevvit();
+    }, 1000);
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   // Loading effect
   useEffect(() => {
@@ -55,13 +133,19 @@ export const App = () => {
       }, 1000);
     } else if (timeLeft === 0 && gameStarted) {
       setGameState('finished');
+      
+      // Save clicks to Devvit when game finishes
+      const totalGameClicks = loveCount + irritateCount;
+      if (totalGameClicks > 0) {
+        saveClicksToDevvit(totalGameClicks);
+      }
+      
       // Update stats when game finishes
       setTotalGamesPlayed(prev => prev + 1);
-      setTotalClicks(prev => prev + loveCount + irritateCount);
+      setTotalClicks(prev => prev + totalGameClicks);
       setTotalTimeSpent(prev => prev + 10);
       
       // Calculate click speed for this game
-      const totalGameClicks = loveCount + irritateCount;
       const gameClickSpeed = totalGameClicks / 10; // clicks per second
       setBestClickSpeed(prev => Math.max(prev, gameClickSpeed));
       
@@ -259,6 +343,17 @@ export const App = () => {
         onMyScore={() => setGameState('score')}
         onLeaderboard={() => setGameState('leaderboard')}
       />
+
+      {/* Total Clicks Display */}
+      {totalClicksAllTime > 0 && (
+        <div className="fixed top-20 left-0 right-0 flex justify-center z-20 px-4">
+          <div className="bg-gray-800 bg-opacity-80 backdrop-blur-lg rounded-2xl px-4 py-2 border border-white border-opacity-30">
+            <div className="text-white text-sm font-medium text-center">
+              🌟 Total Clicks Across All Sessions: <span className="font-bold text-yellow-300">{totalClicksAllTime.toLocaleString()}</span>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Timer */}
       {gameStarted && (

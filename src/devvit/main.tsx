@@ -1,29 +1,91 @@
-import { Devvit } from '@devvit/public-api';
-import { defineConfig } from '@devvit/server';
+import { Devvit, useState } from '@devvit/public-api';
 
-// Side effect import to bundle the server
-import '../server/index';
-
-defineConfig({
-  name: 'Surprise Snoo',
-  entry: 'index.html',
-  height: 'regular',
-  menu: { enable: false },
+// Configure Devvit app with proper permissions
+Devvit.configure({
+  redditAPI: true,
+  redis: true,
+  http: true,
 });
 
-export const Preview: Devvit.BlockComponent = () => {
+export const App: Devvit.CustomPostComponent = (context) => {
+  const { redis } = context;
+  const [webviewVisible, setWebviewVisible] = useState(false);
+
+  const onMessage = async (msg: any) => {
+    console.log('Received message in Devvit:', msg);
+    
+    switch (msg.type) {
+      case 'SAVE_CLICKS':
+        try {
+          const newTotal = await redis.incrby('total_clicks', msg.data.clicks);
+          console.log(`Added ${msg.data.clicks} clicks. New total: ${newTotal}`);
+          return { type: 'CLICKS_SAVED', data: { totalClicks: newTotal } };
+        } catch (error) {
+          console.error('Error saving clicks:', error);
+          return { type: 'ERROR', data: { message: 'Failed to save clicks' } };
+        }
+        
+      case 'GET_TOTAL_CLICKS':
+        try {
+          const clicks = await redis.get('total_clicks');
+          const count = clicks ? parseInt(clicks) : 0;
+          console.log('Retrieved total clicks:', count);
+          return { type: 'TOTAL_CLICKS', data: { totalClicks: count } };
+        } catch (error) {
+          console.error('Error getting total clicks:', error);
+          return { type: 'ERROR', data: { message: 'Failed to get total clicks' } };
+        }
+        
+      default:
+        console.log('Unknown message type:', msg.type);
+        return { type: 'UNKNOWN' };
+    }
+  };
+
+  if (webviewVisible) {
+    return (
+      <vstack height="100%" width="100%">
+        <webview
+          id="myWebView"
+          url="index.html"
+          onMessage={onMessage}
+          height="100%"
+          width="100%"
+        />
+      </vstack>
+    );
+  }
+
   return (
-    <vstack width={'100%'} height={'100%'} alignment="center middle">
-      <text size="large" weight="bold">
-        Surprise Snoo
+    <vstack height="100%" width="100%" alignment="center middle" gap="medium" padding="medium">
+      <text size="xxlarge" weight="bold" color="primary">
+        🎮 Surprise Snoo
       </text>
-      <text size="medium" color="neutral-content-weak">
+      <text size="medium" color="secondary" alignment="center">
         Love or irritate Snoo with emoji effects!
       </text>
+      <text size="small" color="neutral-content-weak" alignment="center">
+        Click below to start playing and track your clicks!
+      </text>
+      <button
+        appearance="primary"
+        size="large"
+        onPress={() => setWebviewVisible(true)}
+      >
+        🚀 Start Game
+      </button>
     </vstack>
   );
 };
 
+// Register the custom post type
+Devvit.addCustomPostType({
+  name: 'Surprise Snoo',
+  height: 'regular',
+  render: App,
+});
+
+// Menu item to create posts
 Devvit.addMenuItem({
   label: 'Create Surprise Snoo Game',
   location: 'subreddit',
@@ -36,7 +98,16 @@ Devvit.addMenuItem({
       const post = await reddit.submitPost({
         title: 'Surprise Snoo - Love or Irritate Snoo!',
         subredditName: subreddit.name,
-        preview: <Preview />,
+        preview: (
+          <vstack width={'100%'} height={'100%'} alignment="center middle">
+            <text size="large" weight="bold">
+              Surprise Snoo
+            </text>
+            <text size="medium" color="neutral-content-weak">
+              Love or irritate Snoo with emoji effects!
+            </text>
+          </vstack>
+        ),
       });
       ui.showToast({ text: 'Created Surprise Snoo game post!' });
       ui.navigateTo(post.url);
