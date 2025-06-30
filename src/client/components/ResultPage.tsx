@@ -9,6 +9,11 @@ interface ResultPageProps {
   irritateCount: number;
   onRestart: () => void;
   onClose: () => void;
+  totalGamesPlayed: number;
+  totalClicks: number;
+  totalTimeSpent: number;
+  bestClickSpeed: number;
+  favoriteAction: 'love' | 'irritate' | 'balanced';
 }
 
 // Gift options for different moods
@@ -27,7 +32,7 @@ const irritateGifts = [
 const quirkGifts = [
   { emoji: '🐪', name: 'Camel' },
   { emoji: '🐑', name: 'Sheep' },
-  { emoji: '🦙', name: 'Llama' }
+  { emoji: '🐒', name: 'Monkey' }
 ];
 
 // Message collections
@@ -100,7 +105,7 @@ const quirkMessages = [
   "Stop texting. I miss you more now. 🙄💌",
 ];
 
-export const ResultPage: React.FC<ResultPageProps> = ({ loveCount, irritateCount, onRestart, onClose }) => {
+export const ResultPage: React.FC<ResultPageProps> = ({ loveCount, irritateCount, onRestart, onClose, totalGamesPlayed, totalClicks, totalTimeSpent, bestClickSpeed, favoriteAction }) => {
   const [gift, setGift] = useState<{ emoji: string; name: string } | null>(null);
   const [message, setMessage] = useState<string>('');
   const [isQuirky, setIsQuirky] = useState<boolean>(false);
@@ -108,7 +113,6 @@ export const ResultPage: React.FC<ResultPageProps> = ({ loveCount, irritateCount
   const [showScore, setShowScore] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
 
-  const totalClicks = loveCount + irritateCount;
   const isLoveWinner = loveCount > irritateCount;
   const isDraw = loveCount === irritateCount;
 
@@ -119,8 +123,8 @@ export const ResultPage: React.FC<ResultPageProps> = ({ loveCount, irritateCount
 
     if (shouldBeQuirky) {
       // Quirky behavior
-      const randomGift = quirkGifts[Math.floor(Math.random() * quirkGifts.length)];
-      const randomMessage = quirkMessages[Math.floor(Math.random() * quirkMessages.length)];
+      const randomGift = quirkGifts[Math.floor(Math.random() * quirkGifts.length)] ?? { emoji: '', name: '' };
+      const randomMessage = quirkMessages[Math.floor(Math.random() * quirkMessages.length)] ?? '';
       setGift(randomGift);
       setMessage(randomMessage);
     } else {
@@ -132,13 +136,13 @@ export const ResultPage: React.FC<ResultPageProps> = ({ loveCount, irritateCount
         setGift(null);
         setMessage("I'm so confused right now! 🤔");
       } else if (isLoveWinner) {
-        const randomGift = loveGifts[Math.floor(Math.random() * loveGifts.length)];
-        const randomMessage = loveMessages[Math.floor(Math.random() * loveMessages.length)];
+        const randomGift = loveGifts[Math.floor(Math.random() * loveGifts.length)] ?? { emoji: '', name: '' };
+        const randomMessage = loveMessages[Math.floor(Math.random() * loveMessages.length)] ?? '';
         setGift(randomGift);
         setMessage(randomMessage);
       } else {
-        const randomGift = irritateGifts[Math.floor(Math.random() * irritateGifts.length)];
-        const randomMessage = irritateMessages[Math.floor(Math.random() * irritateMessages.length)];
+        const randomGift = irritateGifts[Math.floor(Math.random() * irritateGifts.length)] ?? { emoji: '', name: '' };
+        const randomMessage = irritateMessages[Math.floor(Math.random() * irritateMessages.length)] ?? '';
         setGift(randomGift);
         setMessage(randomMessage);
       }
@@ -152,8 +156,6 @@ export const ResultPage: React.FC<ResultPageProps> = ({ loveCount, irritateCount
       return "It's a tie! Snoo is confused! 🤔";
     } else if (isLoveWinner) {
       return "Snoo feels loved! ❤️";
-    } else if (irritateCount > 0) {
-      return "Snoo is irritated! 😤";
     } else {
       return "No clicks? Snoo is waiting! 😴";
     }
@@ -201,11 +203,11 @@ export const ResultPage: React.FC<ResultPageProps> = ({ loveCount, irritateCount
     return (
       <MyScore
         onClose={() => setShowScore(false)}
-        totalGamesPlayed={1} // This game just finished
+        totalGamesPlayed={totalGamesPlayed}
         totalClicks={totalClicks}
-        totalTimeSpent={10}
-        bestClickSpeed={Math.round((totalClicks / 10) * 10) / 10}
-        favoriteAction={isLoveWinner ? 'love' : irritateCount > loveCount ? 'irritate' : 'balanced'}
+        totalTimeSpent={totalTimeSpent}
+        bestClickSpeed={bestClickSpeed}
+        favoriteAction={favoriteAction}
       />
     );
   }

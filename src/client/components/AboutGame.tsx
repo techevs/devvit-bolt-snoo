@@ -61,7 +61,7 @@ export const AboutGame: React.FC<AboutGameProps> = ({ onClose }) => {
 
       {/* Content */}
       <div className="max-w-md text-center">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">About Surprise Snoo</h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">About Love or Irritate Snoo & Get Surprised Game</h1>
         
         <div className="text-6xl mb-6">🎮</div>
 
@@ -69,28 +69,29 @@ export const AboutGame: React.FC<AboutGameProps> = ({ onClose }) => {
           <section>
             <h2 className="text-xl font-semibold text-gray-800 mb-2">🎯 What is this game?</h2>
             <p className="text-gray-600">
-              Surprise Snoo is a fun, fast-paced clicking game where you interact with Reddit's mascot, Snoo! 
-              Choose to either love or irritate Snoo and see how they react with animated emotions and surprise gifts.
+              <strong>Love or Irritate Snoo & Get Surprised</strong> is a silly but fun game where you interact with Reddit's mascot, Snoo! 
+              You choose to either love or irritate Snoo and see how Snoo reacts after 15 seconds with surprise gifts and messages.
             </p>
           </section>
 
           <section>
             <h2 className="text-xl font-semibold text-gray-800 mb-2">🕹️ How to play</h2>
             <ul className="text-gray-600 space-y-1">
-              <li>• Click "Love Snoo" ❤️ to make Snoo happy</li>
-              <li>• Click "Irritate Snoo" 😤 to annoy Snoo</li>
-              <li>• You have 10 seconds to click as much as you want</li>
+              <li>• Click "Love Snoo" ❤️ to make Snoo happy (Snoo laughs)</li>
+              <li>• Click "Irritate Snoo" 😤 to annoy Snoo (Snoo feels punches)</li>
               <li>• Watch Snoo's animated reactions in real-time</li>
-              <li>• See what surprise gift Snoo gives you at the end!</li>
+              <li>• You have max 15 seconds to click as much as you want</li>
+              <li>• Snoo waits for maximum 10 seconds if you stop after starting</li>
+              <li>• See what surprise gift Snoo gives you at the end, with a message!</li>
             </ul>
           </section>
 
           <section>
             <h2 className="text-xl font-semibold text-gray-800 mb-2">📋 Rules</h2>
             <ul className="text-gray-600 space-y-1">
-              <li>• Once you click a button, the other gets disabled</li>
-              <li>• Click speed affects the feedback messages</li>
-              <li>• Snoo might surprise you with quirky behavior!</li>
+              <li>• Once you click a reaction button, the other reaction gets disabled</li>
+              <li>• Click speed affects the surprise gifts and messages</li>
+              <li>• Snoo might surprise you with quirky behavior</li>
               <li>• Results depend on your final click counts</li>
             </ul>
           </section>
@@ -103,7 +104,7 @@ export const AboutGame: React.FC<AboutGameProps> = ({ onClose }) => {
             <ul className="text-gray-600 space-y-1 mt-2">
               <li>• Love: Chocolate, cookies, or ice cream 🍫🍪🍦</li>
               <li>• Irritate: Trash, punches, or rotten fruit 🗑️👊🍎</li>
-              <li>• Quirky: Camels, sheep, or llamas 🐪🐑🦙</li>
+              <li>• Quirky: Camel, sheep, or monekey 🐪🐑🐒</li>
             </ul>
           </section>
         </div>

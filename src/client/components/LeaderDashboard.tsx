@@ -5,6 +5,11 @@ import { MyScore } from './MyScore';
 
 interface LeaderDashboardProps {
   onClose: () => void;
+  userTotalGames: number;
+  userTotalClicks: number;
+  userTotalTimeSpent: number;
+  userBestClickSpeed: number;
+  userFavoriteAction: 'love' | 'irritate' | 'balanced';
 }
 
 // Dummy data for the leaderboard
@@ -34,13 +39,13 @@ const topComebacks = {
     "Thanks for nothing, you meanie! 😠"
   ],
   quirky: [
-    "Who let you be this cute? 😏",
-    "Stop stealing my thoughts, thief! 🧠💥",
-    "You again? Lucky me. 😜"
+    "You again? Lucky me. 😜",
+    "You're my favorite distraction. 📵💘",
+    "If annoying was cute... oh wait. 🐒💖"
   ]
 };
 
-export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({ onClose }) => {
+export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({ onClose, userTotalGames, userTotalClicks, userTotalTimeSpent, userBestClickSpeed, userFavoriteAction }) => {
   const [showAbout, setShowAbout] = React.useState(false);
   const [showScore, setShowScore] = React.useState(false);
 
@@ -54,6 +59,32 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({ onClose }) => 
 
   const handleLeaderboard = () => {
     // Already on leaderboard page, do nothing
+  };
+
+  // Helper to format time
+  const formatTime = (seconds: number) => {
+    const minutes = Math.floor(seconds / 60);
+    const remainingSeconds = seconds % 60;
+    if (minutes > 0) {
+      return `${minutes}m ${remainingSeconds}s`;
+    }
+    return `${remainingSeconds}s`;
+  };
+
+  const getActionEmoji = () => {
+    switch (userFavoriteAction) {
+      case 'love': return '❤️';
+      case 'irritate': return '😤';
+      default: return '⚖️';
+    }
+  };
+
+  const getActionText = () => {
+    switch (userFavoriteAction) {
+      case 'love': return 'Lover';
+      case 'irritate': return 'Troublemaker';
+      default: return 'Balanced';
+    }
   };
 
   // Show About Game page
@@ -102,6 +133,32 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({ onClose }) => 
           <p className="text-white text-lg opacity-90">
             See who's dominating the Snoo universe!
           </p>
+        </div>
+
+        <div className="bg-gray-900 bg-opacity-80 backdrop-blur-lg rounded-2xl p-6 border border-white border-opacity-30">
+          <h2 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
+          📊 Your Session Stats
+          </h2>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-600">
+                  <th className="text-left py-3 px-2 text-white font-semibold">Games Played</th>
+                  <th className="text-left py-3 px-2 text-white font-semibold">Total Clicks</th>
+                  <th className="text-center py-3 px-2 text-white font-semibold">Time Spent</th>
+                  <th className="text-center py-3 px-2 text-white font-semibold">Best Speed</th>
+                </tr>
+              </thead>
+              <tbody>
+                  <tr className="border-b border-gray-700 hover:bg-purple-500 hover:bg-opacity-20 transition-colors">
+                    <td className="py-3 px-2 text-white font-medium">{userTotalGames}</td>
+                    <td className="py-3 px-2 text-white font-medium">{userTotalClicks}</td>
+                    <td className="py-3 px-2 text-center text-white">{formatTime(userTotalTimeSpent)}</td>
+                    <td className="py-3 px-2 text-center text-white">{userBestClickSpeed} clicks/sec</td>
+                  </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* Top Players Score Table */}
@@ -174,7 +231,7 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({ onClose }) => 
             {/* Love Comebacks */}
             <div className="space-y-3">
               <h3 className="text-lg font-semibold text-pink-300 flex items-center gap-2">
-                ❤️ Love Category
+                ❤️ Love Comebacks
               </h3>
               {topComebacks.love.map((comeback, index) => (
                 <div key={index} className="p-3 bg-pink-500 bg-opacity-20 rounded-lg border border-pink-400 border-opacity-30">
@@ -189,7 +246,7 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({ onClose }) => 
             {/* Irritate Comebacks */}
             <div className="space-y-3">
               <h3 className="text-lg font-semibold text-red-300 flex items-center gap-2">
-                😤 Irritate Category
+                😤 Irritate Comebacks
               </h3>
               {topComebacks.irritate.map((comeback, index) => (
                 <div key={index} className="p-3 bg-red-500 bg-opacity-20 rounded-lg border border-red-400 border-opacity-30">
@@ -204,7 +261,7 @@ export const LeaderDashboard: React.FC<LeaderDashboardProps> = ({ onClose }) => 
             {/* Quirky Comebacks */}
             <div className="space-y-3">
               <h3 className="text-lg font-semibold text-yellow-300 flex items-center gap-2">
-                🎪 Quirky Category
+                🎪 Quirky Comebacks
               </h3>
               {topComebacks.quirky.map((comeback, index) => (
                 <div key={index} className="p-3 bg-yellow-500 bg-opacity-20 rounded-lg border border-yellow-400 border-opacity-30">

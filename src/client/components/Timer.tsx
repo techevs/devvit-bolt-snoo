@@ -13,9 +13,9 @@ export const Timer: React.FC<TimerProps> = ({ timeLeft }) => {
 
   const getTimerText = () => {
     if (timeLeft === 1) {
-      return '1 second';
+      return '1 second left';
     }
-    return `${timeLeft} seconds`;
+    return `${timeLeft} seconds left`;
   };
 
   return (

@@ -25,7 +25,7 @@ export const Preview: Devvit.BlockComponent = () => {
 };
 
 Devvit.addMenuItem({
-  label: 'Create Surprise Snoo Game',
+  label: 'Create "Love or Irritate Snoo & Get Surprised" Game',
   location: 'subreddit',
   forUserType: 'moderator',
   onPress: async (_event, context) => {
@@ -34,11 +34,11 @@ Devvit.addMenuItem({
     try {
       const subreddit = await reddit.getCurrentSubreddit();
       const post = await reddit.submitPost({
-        title: 'Surprise Snoo - Love or Irritate Snoo!',
+        title: 'Love or Irritate Snoo & Get Surprised',
         subredditName: subreddit.name,
         preview: <Preview />,
       });
-      ui.showToast({ text: 'Created Surprise Snoo game post!' });
+      ui.showToast({ text: 'Created Love or Irritate Snoo game post!' });
       ui.navigateTo(post.url);
     } catch (error) {
       if (error instanceof Error) {

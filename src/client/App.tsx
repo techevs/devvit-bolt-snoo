@@ -10,6 +10,11 @@ import { AboutGame } from './components/AboutGame';
 import { MyScore } from './components/MyScore';
 import { LeaderDashboard } from './components/LeaderDashboard';
 import { TopNavigation } from './components/TopNavigation';
+import loveSoundFile from '../../assets/loved-reaction.mp3';
+import irritateSoundFile from '../../assets/irritated-reaction.mp3';
+
+// @ts-ignore
+// eslint-disable-next-line
 
 type GameState = 'loading' | 'playing' | 'finished' | 'about' | 'score' | 'leaderboard';
 type ClickSpeed = 'no-clicks' | 'very-slow' | 'slow' | 'normal' | 'fast' | 'very-fast';
@@ -35,8 +40,38 @@ export const App = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const timerRef = useRef<NodeJS.Timeout | null>(null);
   const speedCheckRef = useRef<NodeJS.Timeout | null>(null);
+  const gameEndTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const clickTimestamps = useRef<number[]>([]);
   const lastClickTime = useRef<number>(0);
+
+  // Audio refs and sound queue
+  const loveAudioRef = useRef<HTMLAudioElement | null>(null);
+  const irritateAudioRef = useRef<HTMLAudioElement | null>(null);
+  const soundQueue = useRef<Array<'love' | 'irritate'>>([]);
+  const isSoundPlaying = useRef(false);
+
+  // Load stats from localStorage on mount
+  useEffect(() => {
+    const storedGames = localStorage.getItem('snoo_totalGamesPlayed');
+    const storedClicks = localStorage.getItem('snoo_totalClicks');
+    const storedTime = localStorage.getItem('snoo_totalTimeSpent');
+    const storedBestSpeed = localStorage.getItem('snoo_bestClickSpeed');
+    const storedFavorite = localStorage.getItem('snoo_favoriteAction');
+    if (storedGames) setTotalGamesPlayed(Number(storedGames));
+    if (storedClicks) setTotalClicks(Number(storedClicks));
+    if (storedTime) setTotalTimeSpent(Number(storedTime));
+    if (storedBestSpeed) setBestClickSpeed(Number(storedBestSpeed));
+    if (storedFavorite === 'love' || storedFavorite === 'irritate' || storedFavorite === 'balanced') setFavoriteAction(storedFavorite);
+  }, []);
+
+  // Save stats to localStorage whenever they change
+  useEffect(() => {
+    localStorage.setItem('snoo_totalGamesPlayed', String(totalGamesPlayed));
+    localStorage.setItem('snoo_totalClicks', String(totalClicks));
+    localStorage.setItem('snoo_totalTimeSpent', String(totalTimeSpent));
+    localStorage.setItem('snoo_bestClickSpeed', String(bestClickSpeed));
+    localStorage.setItem('snoo_favoriteAction', favoriteAction);
+  }, [totalGamesPlayed, totalClicks, totalTimeSpent, bestClickSpeed, favoriteAction]);
 
   // Loading effect
   useEffect(() => {
@@ -46,6 +81,20 @@ export const App = () => {
 
     return () => clearTimeout(loadingTimer);
   }, []);
+
+  // Helper to clear all sounds and queue
+  const clearAllSounds = () => {
+    soundQueue.current = [];
+    isSoundPlaying.current = false;
+    if (loveAudioRef.current) {
+      loveAudioRef.current.pause();
+      loveAudioRef.current.currentTime = 0;
+    }
+    if (irritateAudioRef.current) {
+      irritateAudioRef.current.pause();
+      irritateAudioRef.current.currentTime = 0;
+    }
+  };
 
   // Timer countdown - runs independently
   useEffect(() => {
@@ -73,6 +122,13 @@ export const App = () => {
       } else {
         setFavoriteAction('balanced');
       }
+      // Clear the 15s game end timer if it exists
+      if (gameEndTimeoutRef.current) {
+        clearTimeout(gameEndTimeoutRef.current);
+        gameEndTimeoutRef.current = null;
+      }
+      // Clear all sounds and queue
+      clearAllSounds();
     }
 
     return () => {
@@ -131,9 +187,72 @@ export const App = () => {
     };
   }, [gameStarted, timeLeft, loveCount, irritateCount]);
 
+  // Initialize audio elements only once
+  useEffect(() => {
+    loveAudioRef.current = new window.Audio(loveSoundFile);
+    irritateAudioRef.current = new window.Audio(irritateSoundFile);
+    // Ensure sounds do not overlap
+    loveAudioRef.current.addEventListener('ended', handleSoundEnded);
+    irritateAudioRef.current.addEventListener('ended', handleSoundEnded);
+    return () => {
+      loveAudioRef.current?.removeEventListener('ended', handleSoundEnded);
+      irritateAudioRef.current?.removeEventListener('ended', handleSoundEnded);
+    };
+    // eslint-disable-next-line
+  }, []);
+
+  // Play sound helper
+  const playSound = (type: 'love' | 'irritate') => {
+    if (isSoundPlaying.current) {
+      soundQueue.current.push(type);
+      return;
+    }
+    isSoundPlaying.current = true;
+    if (type === 'love' && loveAudioRef.current) {
+      loveAudioRef.current.currentTime = 0;
+      loveAudioRef.current.play();
+    } else if (type === 'irritate' && irritateAudioRef.current) {
+      irritateAudioRef.current.currentTime = 0;
+      irritateAudioRef.current.play();
+    }
+  };
+
+  // When a sound ends, play the next in queue if any
+  function handleSoundEnded() {
+    isSoundPlaying.current = false;
+    if (soundQueue.current.length > 0) {
+      const nextType = soundQueue.current.shift();
+      if (nextType) playSound(nextType);
+    }
+  }
+
   const handleAction = (type: 'love' | 'irritate') => {
     if (!gameStarted) {
       setGameStarted(true);
+      // Start 15s hard limit timer on first click
+      if (!gameEndTimeoutRef.current) {
+        gameEndTimeoutRef.current = setTimeout(() => {
+          setGameState('finished');
+          // Update stats when game finishes
+          setTotalGamesPlayed(prev => prev + 1);
+          setTotalClicks(prev => prev + loveCount + irritateCount);
+          setTotalTimeSpent(prev => prev + 10);
+          // Calculate click speed for this game
+          const totalGameClicks = loveCount + irritateCount;
+          const gameClickSpeed = totalGameClicks / 10; // clicks per second
+          setBestClickSpeed(prev => Math.max(prev, gameClickSpeed));
+          // Update favorite action
+          if (loveCount > irritateCount) {
+            setFavoriteAction('love');
+          } else if (irritateCount > loveCount) {
+            setFavoriteAction('irritate');
+          } else {
+            setFavoriteAction('balanced');
+          }
+          // Clear all sounds and queue
+          clearAllSounds();
+        }, 15000);
+      }
     }
 
     const now = Date.now();
@@ -145,6 +264,8 @@ export const App = () => {
     if (clickTimestamps.current.length > 20) {
       clickTimestamps.current = clickTimestamps.current.slice(-20);
     }
+
+    playSound(type);
 
     if (type === 'love') {
       setLoveCount(prev => prev + 1);
@@ -160,7 +281,7 @@ export const App = () => {
   };
 
   const createEmojiEffects = (type: 'love' | 'irritate') => {
-    const newEmojis = [];
+    const newEmojis: Array<{ id: number; type: 'love' | 'irritate'; x: number; y: number; dx: number; dy: number }> = [];
     for (let i = 0; i < 20; i++) {
       const angle = Math.random() * 2 * Math.PI;
       const radius = 80 + Math.random() * 40;
@@ -209,6 +330,12 @@ export const App = () => {
     if (speedCheckRef.current) {
       clearInterval(speedCheckRef.current);
     }
+    if (gameEndTimeoutRef.current) {
+      clearTimeout(gameEndTimeoutRef.current);
+      gameEndTimeoutRef.current = null;
+    }
+    // Also clear all sounds and queue on restart
+    clearAllSounds();
   };
 
   const handleClose = () => {
@@ -237,7 +364,13 @@ export const App = () => {
   }
 
   if (gameState === 'leaderboard') {
-    return <LeaderDashboard onClose={() => setGameState('playing')} />;
+    return <LeaderDashboard onClose={() => setGameState('playing')}
+      userTotalGames={totalGamesPlayed}
+      userTotalClicks={totalClicks}
+      userTotalTimeSpent={totalTimeSpent}
+      userBestClickSpeed={bestClickSpeed}
+      userFavoriteAction={favoriteAction}
+    />;
   }
 
   if (gameState === 'finished') {
@@ -247,6 +380,11 @@ export const App = () => {
         irritateCount={irritateCount}
         onRestart={handleRestart}
         onClose={handleClose}
+        totalGamesPlayed={totalGamesPlayed}
+        totalClicks={totalClicks}
+        totalTimeSpent={totalTimeSpent}
+        bestClickSpeed={Math.round(bestClickSpeed * 10) / 10}
+        favoriteAction={favoriteAction}
       />
     );
   }
