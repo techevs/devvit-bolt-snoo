@@ -12,6 +12,7 @@ import { LeaderDashboard } from './components/LeaderDashboard';
 import { TopNavigation } from './components/TopNavigation';
 import loveSoundFile from '../../assets/loved-reaction.mp3';
 import irritateSoundFile from '../../assets/irritated-reaction.mp3';
+import whiteCircleLogo from '../../assets/white_circle_360x360.png';
 
 // @ts-ignore
 // eslint-disable-next-line
@@ -397,6 +398,27 @@ export const App = () => {
         onMyScore={() => setGameState('score')}
         onLeaderboard={() => setGameState('leaderboard')}
       />
+
+      {/* Logo at top left, only on Home page */}
+      {gameState === 'playing' && (
+        <a
+          href="https://bolt.new/"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            position: 'absolute',
+            top: 16,
+            left: 16,
+            zIndex: 20,
+          }}
+        >
+          <img
+            src={whiteCircleLogo}
+            alt="Logo"
+            style={{ width: 72, height: 72, borderRadius: '50%', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
+          />
+        </a>
+      )}
 
       {/* Timer */}
       {gameStarted && (

@@ -1,8 +1,27 @@
 import React from 'react';
+import whiteCircleLogo from '../../../assets/white_circle_360x360.png';
 
 export const LoadingScreen: React.FC = () => {
   return (
     <div className="min-h-screen bg-white flex flex-col items-center justify-center relative overflow-hidden">
+      {/* Logo at top left */}
+      <a
+        href="https://bolt.new/"
+        target="_blank"
+        rel="noopener noreferrer"
+        style={{
+          position: 'absolute',
+          top: 16,
+          left: 16,
+          zIndex: 20,
+        }}
+      >
+        <img
+          src={whiteCircleLogo}
+          alt="Logo"
+          style={{ width: 72, height: 72, borderRadius: '50%', boxShadow: '0 2px 8px rgba(0,0,0,0.08)' }}
+        />
+      </a>
       {/* Animated background elements */}
       <div className="absolute inset-0 opacity-20">
         <div className="absolute top-20 left-20 text-4xl animate-bounce">🎮</div>
