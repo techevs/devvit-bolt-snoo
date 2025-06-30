@@ -5,7 +5,7 @@ import { defineConfig } from '@devvit/server';
 import '../server/index';
 
 defineConfig({
-  name: 'Surprise Snoo',
+  name: 'Love or Irritate Snoo & Get Surprised',
   entry: 'index.html',
   height: 'regular',
   menu: { enable: false },
@@ -15,10 +15,10 @@ export const Preview: Devvit.BlockComponent = () => {
   return (
     <vstack width={'100%'} height={'100%'} alignment="center middle">
       <text size="large" weight="bold">
-        Surprise Snoo
+      Love or Irritate Snoo & Get Surprised
       </text>
       <text size="medium" color="neutral-content-weak">
-        Love or irritate Snoo with emoji effects!
+        Love or irritate Snoo with emojis!
       </text>
     </vstack>
   );

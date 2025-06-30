@@ -61,7 +61,7 @@ export const AboutGame: React.FC<AboutGameProps> = ({ onClose }) => {
 
       {/* Content */}
       <div className="max-w-md text-center">
-        <h1 className="text-3xl font-bold text-gray-800 mb-6">About Love or Irritate Snoo & Get Surprised Game</h1>
+        <h1 className="text-3xl font-bold text-gray-800 mb-6">About Game</h1>
         
         <div className="text-6xl mb-6">🎮</div>
 

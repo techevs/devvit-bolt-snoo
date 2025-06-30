@@ -156,6 +156,8 @@ export const ResultPage: React.FC<ResultPageProps> = ({ loveCount, irritateCount
       return "It's a tie! Snoo is confused! 🤔";
     } else if (isLoveWinner) {
       return "Snoo feels loved! ❤️";
+    } else if (irritateCount > 0) {
+      return "Snoo is irritated! 😤";
     } else {
       return "No clicks? Snoo is waiting! 😴";
     }

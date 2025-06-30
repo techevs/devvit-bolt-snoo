@@ -127,7 +127,7 @@ export const LoadingScreen: React.FC = () => {
 
         {/* Loading text */}
         <h1 className="text-3xl font-bold text-gray-800 mb-4">
-          Surprise Snoo
+          Love or Irritate Snoo & Get Surprised
         </h1>
 
         <p className="text-lg text-gray-600 mb-8 flex items-center justify-center gap-2">
